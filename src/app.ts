@@ -1,0 +1,37 @@
+import http, { IncomingMessage, ServerResponse } from "http";
+
+const PORT: number = 3500;
+
+http
+  .createServer((req: IncomingMessage, res: ServerResponse) => {
+    res.writeHead(200, { "Content-Type": "text/plain" });
+    res.end("Hello, Nova App!");
+  })
+  .listen(PORT);
+
+console.log(`🚀 Сервер запущен в файле app на http://localhost:${PORT}`);
+
+//("mongodb+srv://mukhinigorgen_db_user:23HeHAj9Lc3cM1sz@userdbcluster.nnj8bbk.mongodb.net/?appName=UserDBCluster");
+// const { MongoClient, ServerApiVersion } = require('mongodb');
+// const uri = "mongodb+srv://mukhinigorgen_db_user:23HeHAj9Lc3cM1sz@userdbcluster.nnj8bbk.mongodb.net/?appName=UserDBCluster";
+// // Create a MongoClient with a MongoClientOptions object to set the Stable API version
+// const client = new MongoClient(uri, {
+//   serverApi: {
+//     version: ServerApiVersion.v1,
+//     strict: true,
+//     deprecationErrors: true,
+//   }
+// });
+// async function run() {
+//   try {
+//     // Connect the client to the server	(optional starting in v4.7)
+//     await client.connect();
+//     // Send a ping to confirm a successful connection
+//     await client.db("admin").command({ ping: 1 });
+//     console.log("Pinged your deployment. You successfully connected to MongoDB!");
+//   } finally {
+//     // Ensures that the client will close when you finish/error
+//     await client.close();
+//   }
+// }
+// run().catch(console.dir);
