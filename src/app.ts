@@ -4,8 +4,21 @@ const PORT: number = 3500;
 
 http
   .createServer((req: IncomingMessage, res: ServerResponse) => {
-    res.writeHead(200, { "Content-Type": "text/plain" });
-    res.end("Hello, Nova App!");
+    // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)
+    // потом это все нужно будет поменять код ниже так как это не безопасно для продакшина
+    res.setHeader("Access-Control-Allow-Origin", "*");
+    res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+
+    // ✅ Обрабатываем предварительный OPTIONS-запрос
+    if (req.method === "OPTIONS") {
+      res.writeHead(204);
+      res.end();
+      return;
+    }
+
+    res.setHeader("Content-Type", "application/json");
+    res.end(JSON.stringify({ message: "Hello, Nova App!" }));
   })
   .listen(PORT);
 
@@ -35,3 +48,19 @@ console.log(`🚀 Сервер запущен в файле app на http://loca
 //   }
 // }
 // run().catch(console.dir);
+
+// заменить код связь сервера с фронтом
+// Как сделать безопасно в будущем (для продакшена)
+
+// Когда ты будешь разворачивать сервер (например, на Render, Vercel, Railway и т.д.),
+// тогда замени * на конкретный адрес фронтенда:
+
+// res.setHeader("Access-Control-Allow-Origin", "https://nova-app.vercel.app");
+
+// Можно даже динамически проверять:
+
+// const allowedOrigins = ["https://nova-app.vercel.app", "http://localhost:3000"];
+// if (req.headers.origin && allowedOrigins.includes(req.headers.origin)) {
+//   res.setHeader("Access-Control-Allow-Origin", req.headers.origin);
+// }
+// конец
