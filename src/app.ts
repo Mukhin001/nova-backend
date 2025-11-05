@@ -17,6 +17,32 @@ http
       return;
     }
 
+    // ✅ Маршрут регистрации
+    if (req.url === "/register" && req.method === "POST") {
+      let body = "";
+
+      req.on("data", (chunk) => {
+        body += chunk;
+      });
+
+      req.on("end", () => {
+        try {
+          const parsedData = JSON.parse(body);
+          console.log("📥 Получены данные с фронта:", parsedData);
+
+          res.writeHead(200, { "content-type": "application/json" });
+          res.end(JSON.stringify({ message: "Данные успешно получены ✅" }));
+        } catch (error) {
+          console.error("❌ Ошибка парсинга:", error);
+
+          res.writeHead(400);
+          res.end(JSON.stringify({ error: "Неверный формат JSON" }));
+        }
+      });
+
+      return;
+    }
+
     res.setHeader("Content-Type", "application/json");
     res.end(JSON.stringify({ message: "Hello, Nova App!" }));
   })
