@@ -1,0 +1,61 @@
+import { IncomingMessage, ServerResponse } from "http";
+import { dbConnect } from "../db/mongDbClient.js";
+import { json } from "../utils/response.js";
+import bcrypt from "bcrypt"; // для хэширования пароля
+
+export const handleLogin = async (
+  req: IncomingMessage,
+  res: ServerResponse
+) => {
+  let body = "";
+
+  // 1. Читаем тело запроса
+  req.on("data", (chunk) => {
+    body += chunk;
+  });
+
+  req.on("end", async () => {
+    try {
+      // 2. Парсим JSON из тела запроса
+      const { email, password } = JSON.parse(body);
+      console.log("📥 Получены данные с фронта:");
+
+      if (!email || !password) {
+        return json(res, 400, { error: "Все поля обязательны" });
+      }
+
+      // 3. Получаем доступ к базе
+      const db = await dbConnect();
+      const users = db.collection("users");
+      // 4. Ищем пользователя по email
+      const user = await users.findOne({ email });
+
+      if (!user) {
+        return json(res, 409, {
+          error: "Пользователь с таким email не найден",
+        });
+      }
+
+      // 5. Проверяем пароль
+      const passwordMatch = await bcrypt.compare(password, user.passwordHash);
+      if (!passwordMatch) {
+        return json(res, 401, { error: "Неверный пароль" });
+      }
+
+      // 6. Если всё верно
+      json(res, 200, { message: "Успешный вход ✅", name: user.name });
+    } catch (error) {
+      console.error("❌ Ошибка логина:", error);
+
+      json(res, 400, { error: "Некорректные данные" });
+    }
+  });
+};
+
+// Читаем тело запроса.
+// Парсим JSON.
+// Проверяем, что email и password заполнены.
+// Ищем пользователя по email в MongoDB.
+// Сравниваем переданный пароль с хэшем через bcrypt.compare.
+// Если всё верно — возвращаем 200 OK с именем пользователя.
+// Если email не найден или пароль не совпадает — возвращаем 401 Unauthorized.

@@ -1,5 +1,5 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { json } from "../utils/response";
+import { json } from "../utils/response.js";
 
 /**
  * Обработчик возвращает простое приветствие.

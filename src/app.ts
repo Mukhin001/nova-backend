@@ -1,6 +1,8 @@
+import "dotenv/config"; // автоматически загружает .env
 import http, { IncomingMessage, ServerResponse } from "http";
-import { handleGreet } from "./handlers/greet";
-import { handleRegister } from "./handlers/register";
+import { handleGreet } from "./handlers/greet.js";
+import { handleLogin } from "./handlers/handleLogin.js";
+import { handleRegister } from "./handlers/handleRegister.js";
 
 const PORT: number = 3500;
 
@@ -31,8 +33,10 @@ const server = http.createServer(
 
     // ✅ Маршрут регистрации
     if (req.url === "/register" && req.method === "POST") {
-      handleRegister(req, res);
-      return;
+      return handleRegister(req, res);
+    }
+    if (req.url === "/login" && req.method === "POST") {
+      return handleLogin(req, res);
     }
   }
 );
