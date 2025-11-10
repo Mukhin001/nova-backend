@@ -3,8 +3,8 @@ import http, { IncomingMessage, ServerResponse } from "http";
 import { handleGreet } from "./handlers/greet.js";
 import { handleLogin } from "./handlers/handleLogin.js";
 import { handleRegister } from "./handlers/handleRegister.js";
-// import { handleGetMe } from "./handlers/handleGetMe.js";
-// import { authMiddleware } from "./middleware/authMiddleware.js";
+import { handleUpdateProfile } from "./handlers/handleUpdateProfile.js";
+import { authMiddleware } from "./middlewares/auth.js";
 
 const PORT: number = 3500;
 
@@ -13,8 +13,8 @@ const setCors = (res: ServerResponse) => {
   // потом это все нужно будет поменять код ниже так как это не безопасно для продакшина
   // Для разработки — localhost. В продакшне заменим на конкретный домен.
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 };
 
 const server = http.createServer(
@@ -40,9 +40,9 @@ const server = http.createServer(
     if (req.url === "/login" && req.method === "POST") {
       return handleLogin(req, res);
     }
-    // if (req.url === "/me" && req.method === "POST") {
-    //   return authMiddleware(handleGetMe)(req, res);
-    // }
+    if (req.url === "/update-profile" && req.method === "PUT") {
+      return authMiddleware(req, res, () => handleUpdateProfile(req, res));
+    }
   }
 );
 

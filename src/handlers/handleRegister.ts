@@ -2,6 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { dbConnect } from "../db/mongDbClient.js";
 import { json } from "../utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
+import jwt from "jsonwebtoken";
 
 export const handleRegister = async (
   req: IncomingMessage,
@@ -48,11 +49,26 @@ export const handleRegister = async (
       };
       await users.insertOne(newUser);
 
+      const result = await users.insertOne(newUser);
+
+      // ✅ получаем id из результата вставки
+      const userId = result.insertedId.toString();
+
+      // ✅ генерируем токен
+      const token = jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
+        expiresIn: "1h",
+      });
+
       // 8. Отправляем успешный ответ
       json(res, 201, {
         message: "Пользователь создан ✅",
-        name: newUser.name,
-        email: newUser.email,
+        token,
+        user: {
+          id: userId,
+          name: newUser.name,
+          email: newUser.email,
+          createdAt: newUser.createdAt,
+        },
       });
     } catch (error) {
       console.error("❌ Ошибка регистрации:", error);
