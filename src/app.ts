@@ -3,6 +3,8 @@ import http, { IncomingMessage, ServerResponse } from "http";
 import { handleGreet } from "./handlers/greet.js";
 import { handleLogin } from "./handlers/handleLogin.js";
 import { handleRegister } from "./handlers/handleRegister.js";
+// import { handleGetMe } from "./handlers/handleGetMe.js";
+// import { authMiddleware } from "./middleware/authMiddleware.js";
 
 const PORT: number = 3500;
 
@@ -38,6 +40,9 @@ const server = http.createServer(
     if (req.url === "/login" && req.method === "POST") {
       return handleLogin(req, res);
     }
+    // if (req.url === "/me" && req.method === "POST") {
+    //   return authMiddleware(handleGetMe)(req, res);
+    // }
   }
 );
 

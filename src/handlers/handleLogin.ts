@@ -2,6 +2,7 @@ import { IncomingMessage, ServerResponse } from "http";
 import { dbConnect } from "../db/mongDbClient.js";
 import { json } from "../utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
+import jwt from "jsonwebtoken";
 
 export const handleLogin = async (
   req: IncomingMessage,
@@ -42,8 +43,26 @@ export const handleLogin = async (
         return json(res, 401, { error: "Неверный пароль" });
       }
 
+      // ✅ Генерируем токен
+      const token = jwt.sign(
+        { id: user._id.toString() },
+        process.env.JWT_SECRET!,
+        {
+          expiresIn: "1h",
+        }
+      );
+
       // 6. Если всё верно
-      json(res, 200, { message: "Успешный вход ✅", name: user.name });
+      json(res, 200, {
+        message: "Успешный вход ✅",
+        token,
+        user: {
+          id: user._id.toString(),
+          name: user.name,
+          email: user.email,
+          createdAt: user.createdAt,
+        },
+      });
     } catch (error) {
       console.error("❌ Ошибка логина:", error);
 
