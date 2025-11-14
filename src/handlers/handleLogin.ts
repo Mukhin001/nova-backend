@@ -4,10 +4,7 @@ import { json } from "../utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
 import jwt from "jsonwebtoken";
 
-export const handleLogin = async (
-  req: IncomingMessage,
-  res: ServerResponse
-) => {
+export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
 
   // 1. Читаем тело запроса

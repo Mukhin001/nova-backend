@@ -12,22 +12,25 @@ export const authMiddleware = (
   res: ServerResponse,
   next: () => void
 ) => {
+  // получаем токен с фронта
   const authHeader = req.headers.authorization;
 
   if (!authHeader) {
     return json(res, 401, { error: "Нет токена, доступ запрещён" });
   }
 
+  // удаляем префикс Bearer из строки токена
   const token = authHeader.replace("Bearer ", "");
-  const secret = process.env.JWT_SECRET;
+  // получаем ключ токена из файла .env что сравнить ключ и токен создан ли на моем сервере
+  const secretKey = process.env.JWT_SECRET;
 
-  if (!secret) {
+  if (!secretKey) {
     console.error("❌ JWT_SECRET не найден в .env");
     return json(res, 500, { error: "Ошибка конфигурации сервера" });
   }
 
   try {
-    const decoded = jwt.verify(token, secret) as DecodedToken;
+    const decoded = jwt.verify(token, secretKey) as DecodedToken;
     req.user = decoded; // ✅ TS теперь не ругается
     next();
   } catch (err) {

@@ -4,14 +4,25 @@ import { dbConnect } from "../db/mongDbClient.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
-export const handleUpdateProfile = async (
-  req: IncomingMessage & { user?: any },
+interface User {
+  name: string;
+  email: string;
+  passwordHash: string;
+  createdAt: Date;
+}
+
+interface DecodedUser {
+  id: string;
+  email?: string;
+}
+
+export const handleUpdateProfile = (
+  req: IncomingMessage & { user?: DecodedUser },
   res: ServerResponse
 ) => {
   try {
     if (!req.user) {
       console.log(req.user);
-
       return json(res, 401, { error: "Нет токена" });
     }
 
@@ -27,7 +38,10 @@ export const handleUpdateProfile = async (
 
       const db = await dbConnect();
       const users = db.collection("users");
-
+      if (!req.user) {
+        console.log(req.user);
+        return json(res, 401, { error: "Нет токена" });
+      }
       const userId: string = req.user.id;
       const user = await users.findOne({ _id: new ObjectId(userId) });
 
@@ -43,7 +57,7 @@ export const handleUpdateProfile = async (
         return json(res, 401, { error: "Неверный текущий пароль" });
       }
 
-      const updatedFields = { name, email, passwordHash: "" };
+      const updatedFields: Partial<User> = { name, email };
 
       if (password_new && password_new.length >= 6) {
         updatedFields.passwordHash = await bcrypt.hash(password_new, 10);

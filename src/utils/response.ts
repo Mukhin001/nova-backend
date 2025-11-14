@@ -25,6 +25,7 @@ export const json = (
   }
 };
 
+// Удаление ресурса (DELETE)
 export const noContent = (res: ServerResponse) => {
   if (!res.headersSent) {
     res.writeHead(204);

@@ -4,10 +4,7 @@ import { json } from "../utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
 import jwt from "jsonwebtoken";
 
-export const handleRegister = async (
-  req: IncomingMessage,
-  res: ServerResponse
-) => {
+export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
 
   // 1. Читаем тело запроса
@@ -37,8 +34,7 @@ export const handleRegister = async (
       }
 
       // 6. Хэшируем пароль
-      const saltRounds = 10;
-      const passwordHash = await bcrypt.hash(password, saltRounds);
+      const passwordHash = await bcrypt.hash(password, 10);
 
       // 7. Создаем нового пользователя
       const newUser = {
@@ -47,7 +43,6 @@ export const handleRegister = async (
         passwordHash,
         createdAt: new Date(),
       };
-      await users.insertOne(newUser);
 
       const result = await users.insertOne(newUser);
 

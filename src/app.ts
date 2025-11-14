@@ -1,4 +1,4 @@
-import "dotenv/config"; // автоматически загружает .env
+import "dotenv/config"; // автоматически загружает глобально .env
 import http, { IncomingMessage, ServerResponse } from "http";
 import { handleGreet } from "./handlers/greet.js";
 import { handleLogin } from "./handlers/handleLogin.js";
@@ -6,7 +6,7 @@ import { handleRegister } from "./handlers/handleRegister.js";
 import { handleUpdateProfile } from "./handlers/handleUpdateProfile.js";
 import { authMiddleware } from "./middlewares/auth.js";
 
-const PORT: number = 3500;
+const PORT = Number(process.env.PORT) || 3500;
 
 const setCors = (res: ServerResponse) => {
   // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)
@@ -19,9 +19,8 @@ const setCors = (res: ServerResponse) => {
 
 const server = http.createServer(
   (req: IncomingMessage, res: ServerResponse) => {
-    setCors(res);
-
     // ✅ Обрабатываем предварительный OPTIONS-запрос
+    setCors(res);
     if (req.method === "OPTIONS") {
       res.writeHead(204);
       res.end();

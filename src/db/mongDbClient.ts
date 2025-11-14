@@ -1,12 +1,9 @@
 import { MongoClient, Db } from "mongodb";
-import dotenv from "dotenv";
 
-dotenv.config(); // загружаем .env
-// 1 Берём URL из переменных окружения
-const url = process.env.MONGO_URL as string;
-const MONGO_URL = process.env.MONGO_URL as string;
+// 1 Берём URL из переменных окружения в .env
+const MONGO_URL = process.env.MONGO_URL;
 
-if (!MONGO_URL) throw new Error("MONGO_URL не задан в переменных окружения");
+if (!MONGO_URL) throw new Error("MONGO_URL не задан в .env");
 
 // 2 Создаём клиента с безопасными опциями для Atlas
 const client = new MongoClient(MONGO_URL, {
@@ -24,10 +21,10 @@ let dbInstanse: Db | null = null;
  */
 export const dbConnect = async (): Promise<Db> => {
   if (!dbInstanse) {
-    await client.connect(); // подключаемся к MongoDB
-    dbInstanse = client.db("UserDBCluster"); // имя базы данных
-    console.log("✅ MongoDB подключена");
     try {
+      await client.connect(); // подключаемся к MongoDB
+      dbInstanse = client.db("UserDBCluster"); // имя базы данных
+      console.log("✅ MongoDB подключена");
     } catch (err) {
       console.error("❌ Ошибка подключения к MongoDB:", err);
       throw err;
