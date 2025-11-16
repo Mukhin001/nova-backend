@@ -54,10 +54,13 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
         expiresIn: "1h",
       });
 
+      res.setHeader("Set-Cookie", [
+        `auth_token=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=None; Secure`,
+      ]);
+
       // 8. Отправляем успешный ответ
       json(res, 201, {
         message: "Пользователь создан ✅",
-        token,
         user: {
           id: userId,
           name: newUser.name,

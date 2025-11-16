@@ -49,10 +49,13 @@ export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
         }
       );
 
+      res.setHeader("Set-Cookie", [
+        `auth_token=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=None; Secure`,
+      ]);
+
       // 6. Если всё верно
       json(res, 200, {
         message: "Успешный вход ✅",
-        token,
         user: {
           id: user._id.toString(),
           name: user.name,

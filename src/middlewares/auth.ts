@@ -13,14 +13,18 @@ export const authMiddleware = (
   next: () => void
 ) => {
   // получаем токен с фронта
-  const authHeader = req.headers.authorization;
+  const cookie = req.headers.cookie;
 
-  if (!authHeader) {
+  if (!cookie) {
     return json(res, 401, { error: "Нет токена, доступ запрещён" });
   }
 
-  // удаляем префикс Bearer из строки токена
-  const token = authHeader.replace("Bearer ", "");
+  const token = cookie
+    .split(", ")
+    .find((c) => c.startsWith("token="))
+    ?.split("=")[1];
+
+  if (!token) return json(res, 401, { error: "Нет токена" });
   // получаем ключ токена из файла .env что сравнить ключ и токен создан ли на моем сервере
   const secretKey = process.env.JWT_SECRET;
 
@@ -34,6 +38,6 @@ export const authMiddleware = (
     req.user = decoded; // ✅ TS теперь не ругается
     next();
   } catch (err) {
-    return json(res, 401, { error: "Недействительный токен" });
+    return json(res, 401, { error: "Неверный токен" });
   }
 };

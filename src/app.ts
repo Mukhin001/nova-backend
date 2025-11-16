@@ -5,6 +5,8 @@ import { handleLogin } from "./handlers/handleLogin.js";
 import { handleRegister } from "./handlers/handleRegister.js";
 import { handleUpdateProfile } from "./handlers/handleUpdateProfile.js";
 import { authMiddleware } from "./middlewares/auth.js";
+import { handleMe } from "./handlers/handleMe.js";
+import { handleLogout } from "./handlers/handleLogout.js";
 
 const PORT = Number(process.env.PORT) || 3500;
 
@@ -12,7 +14,8 @@ const setCors = (res: ServerResponse) => {
   // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)
   // потом это все нужно будет поменять код ниже так как это не безопасно для продакшина
   // Для разработки — localhost. В продакшне заменим на конкретный домен.
-  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
 };
@@ -32,7 +35,6 @@ const server = http.createServer(
       return;
     }
 
-    // ✅ Маршрут регистрации
     if (req.url === "/register" && req.method === "POST") {
       return handleRegister(req, res);
     }
@@ -41,6 +43,12 @@ const server = http.createServer(
     }
     if (req.url === "/update-profile" && req.method === "PUT") {
       return authMiddleware(req, res, () => handleUpdateProfile(req, res));
+    }
+    if (req.url === "/me" && req.method === "GET") {
+      return handleMe(req, res);
+    }
+    if (req.url === "/logout" && req.method === "POST") {
+      return handleLogout(req, res);
     }
   }
 );
