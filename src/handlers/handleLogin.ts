@@ -29,7 +29,7 @@ export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
       const user = await users.findOne({ email });
 
       if (!user) {
-        return json(res, 409, {
+        return json(res, 404, {
           error: "Пользователь с таким email не найден",
         });
       }

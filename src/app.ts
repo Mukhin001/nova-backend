@@ -7,6 +7,7 @@ import { handleUpdateProfile } from "./handlers/handleUpdateProfile.js";
 import { authMiddleware } from "./middlewares/auth.js";
 import { handleMe } from "./handlers/handleMe.js";
 import { handleLogout } from "./handlers/handleLogout.js";
+import { handleDelete } from "./handlers/handleDelete.js";
 
 const PORT = Number(process.env.PORT) || 3500;
 
@@ -49,6 +50,9 @@ const server = http.createServer(
     }
     if (req.url === "/logout" && req.method === "POST") {
       return handleLogout(req, res);
+    }
+    if (req.url === "/delete-user" && req.method === "POST") {
+      return handleDelete(req, res);
     }
   }
 );
