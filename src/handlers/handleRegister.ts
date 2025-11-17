@@ -3,6 +3,7 @@ import { dbConnect } from "../db/mongDbClient.js";
 import { json } from "../utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
 import jwt from "jsonwebtoken";
+import { sendEmail } from "../utils/sendEmail.js";
 
 export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
@@ -53,6 +54,21 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
       const token = jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
         expiresIn: "1h",
       });
+
+      // ⬇️⬇️⬇️ Отправляем письмо
+      sendEmail(
+        email,
+        "Регистрация в Nova App",
+        `Здравствуйте, ${name}!
+        Вы успешно зарегистрировались в сервисе Nova App.
+        Теперь вам доступны все функции приложения:
+        • управление профилем  
+        • персональные настройки  
+        • быстрый вход  
+        Если вы не регистрировались — просто игнорируйте это письмо.
+        С уважением,  
+        Команда Nova App`
+      ).catch(console.error); // не ломаем регистрацию, если письмо не ушло
 
       res.setHeader("Set-Cookie", [
         `auth_token=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=None; Secure`,
