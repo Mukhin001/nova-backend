@@ -18,7 +18,15 @@ export const handleMe = async (req: IncomingMessage, res: ServerResponse) => {
 
     const decoded = jwt.verify(token, process.env.JWT_SECRET!);
 
-    const db = await dbConnect();
+    let db;
+    try {
+      db = await dbConnect();
+    } catch (err) {
+      console.error("❌ Ошибка подключения к MongoDB:", err);
+      return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
+    }
+
+    //const db = await dbConnect();
     const users = db.collection("users");
 
     if (

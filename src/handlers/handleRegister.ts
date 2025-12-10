@@ -25,7 +25,14 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
       }
 
       // 4. Получаем доступ к базе
-      const db = await dbConnect();
+      let db;
+      try {
+        db = await dbConnect();
+      } catch (err) {
+        console.error("❌ Ошибка подключения к MongoDB:", err);
+        return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
+      }
+      //const db = await dbConnect();
       const users = db.collection("users");
 
       // 5. Проверяем, есть ли пользователь с таким email

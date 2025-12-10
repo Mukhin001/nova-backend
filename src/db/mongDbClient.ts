@@ -1,14 +1,14 @@
 import { MongoClient, Db } from "mongodb";
-
+//import fs from "fs";
 // 1 Берём URL из переменных окружения в .env
 const MONGO_URL = process.env.MONGO_URL;
 
 if (!MONGO_URL) throw new Error("MONGO_URL не задан в .env");
 
-// 2 Создаём клиента с безопасными опциями для Atlas
+//2 Создаём клиента с безопасными опциями для Atlas
 const client = new MongoClient(MONGO_URL, {
-  tls: true, // включаем TLS
-  tlsAllowInvalidCertificates: false, // не игнорируем сертификаты
+  //tls: true, // включаем TLS
+  //tlsAllowInvalidCertificates: false, // не игнорируем сертификаты
   serverApi: { version: "1" }, // рекомендуемая версия API для Atlas
 });
 

@@ -8,8 +8,9 @@ import { authMiddleware } from "./middlewares/auth.js";
 import { handleMe } from "./handlers/handleMe.js";
 import { handleLogout } from "./handlers/handleLogout.js";
 import { handleDelete } from "./handlers/handleDelete.js";
+import { dbConnect } from "./db/mongDbClient.js";
 
-const PORT = Number(process.env.PORT) || 3500;
+const PORT = Number(process.env.PORT) || 3000;
 
 const setCors = (res: ServerResponse) => {
   // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)
@@ -60,3 +61,7 @@ const server = http.createServer(
 server.listen(PORT, () => {
   console.log(`🚀 Сервер запущен в файле app на http://localhost:${PORT}`);
 });
+
+// dbConnect()
+//   .then(() => console.log("✅ MongoDB подключена"))
+//   .catch((err) => console.error("❌ Ошибка подключения к MongoDB: ", err));

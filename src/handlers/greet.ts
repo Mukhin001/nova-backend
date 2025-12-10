@@ -10,5 +10,5 @@ export const handleGreet = (
   res: ServerResponse
 ): void => {
   // Если нужно — можно различать GET/POST и т.д.
-  json(res, 200, { message: "Hello, Nova App!" });
+  json(res, 200, { message: "Greetings from the server, Nova App!" });
 };

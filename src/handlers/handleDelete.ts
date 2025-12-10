@@ -21,7 +21,14 @@ export const handleDelete = (req: IncomingMessage, res: ServerResponse) => {
         return json(res, 400, { error: "Все поля обязательны" });
       }
 
-      const db = await dbConnect();
+      //const db = await dbConnect();
+      let db;
+      try {
+        db = await dbConnect();
+      } catch (err) {
+        console.error("❌ Ошибка подключения к MongoDB:", err);
+        return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
+      }
       const users = db.collection("users");
       // 4. Ищем пользователя по email
       const user = await users.findOne({ email });
