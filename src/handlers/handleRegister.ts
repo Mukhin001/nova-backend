@@ -24,6 +24,27 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
         return json(res, 400, { error: "Все поля обязательны" });
       }
 
+      // 3.1 проверка пароля
+      if (password.length < 8) {
+        return json(res, 400, {
+          error: "Пароль должен быть минимум 8 символов!",
+        });
+      }
+
+      const passRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&]).+$/;
+      if (!passRegex.test(password)) {
+        return json(res, 400, {
+          error:
+            "Пароль должен содержать одну заглавную букву, одну строчную, одну цифру и один спецсимвол.",
+        });
+      }
+
+      if (password) {
+        return json(res, 400, {
+          error: "Пароль должен быть минимум 6 символов!",
+        });
+      }
+
       // 4. Получаем доступ к базе
       let db;
       try {
