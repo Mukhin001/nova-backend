@@ -9,6 +9,7 @@ import { handleMe } from "./handlers/handleMe.js";
 import { handleLogout } from "./handlers/handleLogout.js";
 import { handleDelete } from "./handlers/handleDelete.js";
 import { handleWeather } from "./handlers/handleWeather.js";
+import { handleNews } from "./handlers/handleNews.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -57,6 +58,9 @@ const server = http.createServer(
     }
     if (req.url?.startsWith("/weather") && req.method === "GET") {
       return handleWeather(req, res);
+    }
+    if (req.url?.startsWith("/news") && req.method === "GET") {
+      return handleNews(req, res);
     }
   }
 );
