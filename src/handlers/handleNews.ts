@@ -6,11 +6,16 @@ export const handleNews = async (req: IncomingMessage, res: ServerResponse) => {
     const url = new URL(req.url ?? "", `http://${req.headers.host}`);
 
     const category = url.searchParams.get("category");
+    const city = url.searchParams.get("city");
+
     const apiUrl = new URL("https://newsdata.io/api/1/latest");
     apiUrl.searchParams.set("apikey", process.env.NEWS_API_KEY!);
 
     if (category) {
       apiUrl.searchParams.set("category", category);
+    }
+    if (city) {
+      apiUrl.searchParams.set("q", city);
     }
 
     const response = await fetch(apiUrl.toString());

@@ -10,6 +10,7 @@ import { handleLogout } from "./handlers/handleLogout.js";
 import { handleDelete } from "./handlers/handleDelete.js";
 import { handleWeather } from "./handlers/handleWeather.js";
 import { handleNews } from "./handlers/handleNews.js";
+import { handleLocation } from "./handlers/handleLocation.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -37,7 +38,18 @@ const server = http.createServer(
       handleGreet(req, res);
       return;
     }
-
+    if (req.url === "/location" && req.method === "GET") {
+      return handleLocation(req, res);
+    }
+    if (req.url === "/me" && req.method === "GET") {
+      return handleMe(req, res);
+    }
+    if (req.url?.startsWith("/weather") && req.method === "GET") {
+      return handleWeather(req, res);
+    }
+    if (req.url?.startsWith("/news") && req.method === "GET") {
+      return handleNews(req, res);
+    }
     if (req.url === "/register" && req.method === "POST") {
       return handleRegister(req, res);
     }
@@ -47,20 +59,11 @@ const server = http.createServer(
     if (req.url === "/update-profile" && req.method === "PUT") {
       return authMiddleware(req, res, () => handleUpdateProfile(req, res));
     }
-    if (req.url === "/me" && req.method === "GET") {
-      return handleMe(req, res);
-    }
     if (req.url === "/logout" && req.method === "POST") {
       return handleLogout(req, res);
     }
     if (req.url === "/delete-user" && req.method === "POST") {
       return handleDelete(req, res);
-    }
-    if (req.url?.startsWith("/weather") && req.method === "GET") {
-      return handleWeather(req, res);
-    }
-    if (req.url?.startsWith("/news") && req.method === "GET") {
-      return handleNews(req, res);
     }
   }
 );
