@@ -3,6 +3,8 @@ import { dbConnect } from "../db/mongDbClient.js";
 import { json } from "../utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
 import jwt from "jsonwebtoken";
+import { LIMITS } from "../constants/validation.js";
+import { validateEmail } from "../utils/validateEmail.js";
 
 export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
@@ -16,10 +18,36 @@ export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
     try {
       // 2. Парсим JSON из тела запроса
       const { email, password } = JSON.parse(body);
-      console.log("📥 Получены данные с фронта:");
+      //console.log("📥 Получены данные с фронта:");
 
-      if (!email || !password) {
+      if (typeof email !== "string" || typeof password !== "string") {
+        return json(res, 400, { error: "Некорректные данные" });
+      }
+
+      if (!email.trim() || !password) {
         return json(res, 400, { error: "Все поля обязательны" });
+      }
+
+      if (email.length > LIMITS.EMAIL_MAX) {
+        return json(res, 400, {
+          error: "Email не должен превышать 255 символов",
+        });
+      }
+
+      if (password.length > LIMITS.PASSWORD_MAX) {
+        return json(res, 400, {
+          error: "Пароль не должен превышать 128 символов",
+        });
+      }
+
+      if (!validateEmail(email)) {
+        return json(res, 400, { error: "Некорректный email" });
+      }
+
+      if (password.length < LIMITS.PASSWORD_MIN) {
+        return json(res, 400, {
+          error: "Пароль должен быть минимум 8 символов!",
+        });
       }
 
       // 3. Получаем доступ к базе

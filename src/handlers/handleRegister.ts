@@ -4,6 +4,8 @@ import { json } from "../utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
 import jwt from "jsonwebtoken";
 import { sendEmail } from "../utils/sendEmail.js";
+import { LIMITS } from "../constants/validation.js";
+import { validateEmail } from "../utils/validateEmail.js";
 
 export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
@@ -17,15 +19,43 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
     try {
       // 2. Парсим JSON из тела запроса
       const { name, email, password } = JSON.parse(body);
-      console.log("📥 Получены данные с фронта:", { name, email, password });
+      //console.log("📥 Получены данные с фронта:");
+
+      if (
+        typeof name !== "string" ||
+        typeof email !== "string" ||
+        typeof password !== "string"
+      ) {
+        return json(res, 400, { error: "Некорректные данные" });
+      }
 
       // 3. Проверяем обязательные поля
-      if (!name || !email || !password) {
+      if (!name.trim() || !email.trim() || !password) {
         return json(res, 400, { error: "Все поля обязательны" });
       }
 
+      if (name.length > LIMITS.NAME_MAX) {
+        return json(res, 400, { error: "Имя не должно превышать 50 символов" });
+      }
+
+      if (email.length > LIMITS.EMAIL_MAX) {
+        return json(res, 400, {
+          error: "Email не должен превышать 255 символов",
+        });
+      }
+
+      if (password.length > LIMITS.PASSWORD_MAX) {
+        return json(res, 400, {
+          error: "Пароль не должен превышать 128 символов",
+        });
+      }
+
+      if (!validateEmail(email)) {
+        return json(res, 400, { error: "Некорректный email" });
+      }
+
       // 3.1 проверка пароля
-      if (password.length < 8) {
+      if (password.length < LIMITS.PASSWORD_MIN) {
         return json(res, 400, {
           error: "Пароль должен быть минимум 8 символов!",
         });
@@ -36,12 +66,6 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
         return json(res, 400, {
           error:
             "Пароль должен содержать одну заглавную букву, одну строчную, одну цифру и один спецсимвол.",
-        });
-      }
-
-      if (password) {
-        return json(res, 400, {
-          error: "Пароль должен быть минимум 6 символов!",
         });
       }
 
@@ -86,7 +110,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
       // ⬇️⬇️⬇️ Отправляем письмо
       sendEmail(
         email,
-        "Регистрация в Nova App",
+        "Регистрация в Nova App!",
         `Здравствуйте, ${name}!
         Вы успешно зарегистрировались в сервисе Nova App.
         Теперь вам доступны все функции приложения:
@@ -95,7 +119,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
         • быстрый вход  
         Если вы не регистрировались — просто игнорируйте это письмо.
         С уважением,  
-        Команда Nova App`
+        Команда Nova App.`
       ).catch(console.error); // не ломаем регистрацию, если письмо не ушло
 
       res.setHeader("Set-Cookie", [
