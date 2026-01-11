@@ -11,6 +11,7 @@ import { handleDelete } from "./handlers/handleDelete.js";
 import { handleWeather } from "./handlers/handleWeather.js";
 import { handleNews } from "./handlers/handleNews.js";
 import { handleLocation } from "./handlers/handleLocation.js";
+import { handleDevice } from "./handlers/handleDevice.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -37,6 +38,9 @@ const server = http.createServer(
     if (req.url === "/" && req.method === "GET") {
       handleGreet(req, res);
       return;
+    }
+    if (req.url === "/device" && req.method === "GET") {
+      return handleDevice(req, res);
     }
     if (req.url === "/location" && req.method === "GET") {
       return handleLocation(req, res);
