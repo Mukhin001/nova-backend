@@ -22,7 +22,7 @@ export const handleUpdateProfile = (
 ) => {
   try {
     if (!req.user) {
-      console.log(req.user);
+      //console.log(req.user);
       return json(res, 401, { error: "Нет токена" });
     }
 
@@ -46,7 +46,7 @@ export const handleUpdateProfile = (
       //const db = await dbConnect();
       const users = db.collection("users");
       if (!req.user) {
-        console.log(req.user);
+        //console.log(req.user);
         return json(res, 401, { error: "Нет токена" });
       }
       const userId: string = req.user.id;
@@ -71,7 +71,7 @@ export const handleUpdateProfile = (
       }
 
       await users.updateOne({ _id: user._id }, { $set: updatedFields });
-      console.log("Данные обновлены ✅", name, email);
+      //console.log("Данные обновлены ✅", name, email);
 
       json(res, 200, {
         message: "Данные обновлены ✅",

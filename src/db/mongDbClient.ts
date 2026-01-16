@@ -24,7 +24,7 @@ export const dbConnect = async (): Promise<Db> => {
     try {
       await client.connect(); // подключаемся к MongoDB
       dbInstanse = client.db("UserDBCluster"); // имя базы данных
-      console.log("✅ MongoDB подключена");
+      //console.log("✅ MongoDB подключена");
     } catch (err) {
       console.error("❌ Ошибка подключения к MongoDB:", err);
       throw err;
