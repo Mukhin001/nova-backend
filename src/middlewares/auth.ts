@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import { json } from "../utils/response.js";
 import type { IncomingMessage, ServerResponse } from "http";
+import { getAuthToken } from "../utils/getAuthToken.js";
 
 interface DecodedToken {
   id: string;
@@ -10,19 +11,9 @@ interface DecodedToken {
 export const authMiddleware = (
   req: IncomingMessage & { user?: DecodedToken },
   res: ServerResponse,
-  next: () => void
+  next: () => void,
 ) => {
-  // получаем токен с фронта
-  const cookie = req.headers.cookie;
-
-  if (!cookie) {
-    return json(res, 401, { error: "Нет токена, доступ запрещён" });
-  }
-
-  const token = cookie
-    .split(", ")
-    .find((c) => c.startsWith("token="))
-    ?.split("=")[1];
+  const token = getAuthToken(req);
 
   if (!token) return json(res, 401, { error: "Нет токена" });
   // получаем ключ токена из файла .env что сравнить ключ и токен создан ли на моем сервере

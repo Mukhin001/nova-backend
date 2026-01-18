@@ -3,14 +3,11 @@ import { json } from "../utils/response.js";
 import jwt from "jsonwebtoken";
 import { dbConnect } from "../db/mongDbClient.js";
 import { ObjectId } from "mongodb";
+import { getAuthToken } from "../utils/getAuthToken.js";
 
 export const handleMe = async (req: IncomingMessage, res: ServerResponse) => {
   try {
-    const cookieHeader = req.headers.cookie || "";
-    const token = cookieHeader
-      .split("; ")
-      .find((row) => row.startsWith("auth_token="))
-      ?.split("=")[1];
+    const token = getAuthToken(req);
 
     if (!token) {
       return json(res, 401, { error: "Нет токена" });
@@ -26,7 +23,6 @@ export const handleMe = async (req: IncomingMessage, res: ServerResponse) => {
       return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
     }
 
-    //const db = await dbConnect();
     const users = db.collection("users");
 
     if (
@@ -44,7 +40,7 @@ export const handleMe = async (req: IncomingMessage, res: ServerResponse) => {
       return json(res, 401, { error: "Пользователь не найден" });
     }
 
-    console.log(cookieHeader);
+    //console.log(cookieHeader);
 
     json(res, 200, {
       user: {
