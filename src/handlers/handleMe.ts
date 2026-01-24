@@ -1,46 +1,23 @@
 import type { IncomingMessage, ServerResponse } from "http";
 import { json } from "../utils/response.js";
-import jwt from "jsonwebtoken";
 import { dbConnect } from "../db/mongDbClient.js";
 import { ObjectId } from "mongodb";
-import { getAuthToken } from "../utils/getAuthToken.js";
+import type { DecodedToken } from "../middlewares/auth.js";
 
-export const handleMe = async (req: IncomingMessage, res: ServerResponse) => {
+export const handleMe = async (
+  req: IncomingMessage & { user?: DecodedToken },
+  res: ServerResponse,
+) => {
   try {
-    const token = getAuthToken(req);
+    if (!req.user) return json(res, 401, { error: "Нет токена" });
 
-    if (!token) {
-      return json(res, 401, { error: "Нет токена" });
-    }
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET!);
-
-    let db;
-    try {
-      db = await dbConnect();
-    } catch (err) {
-      console.error("❌ Ошибка подключения к MongoDB:", err);
-      return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
-    }
-
+    const db = await dbConnect();
     const users = db.collection("users");
-
-    if (
-      !decoded ||
-      typeof decoded === "string" ||
-      typeof decoded.id !== "string"
-    ) {
-      return json(res, 401, { error: "Неверный токен" });
-    }
     const user = await users.findOne({
-      _id: new ObjectId(decoded.id),
+      _id: new ObjectId(req.user.id),
     });
 
-    if (!user) {
-      return json(res, 401, { error: "Пользователь не найден" });
-    }
-
-    //console.log(cookieHeader);
+    if (!user) return json(res, 401, { error: "Пользователь не найден" });
 
     json(res, 200, {
       user: {
@@ -48,9 +25,12 @@ export const handleMe = async (req: IncomingMessage, res: ServerResponse) => {
         name: user.name,
         email: user.email,
         createdAt: user.createdAt,
+        subscriptions: user.subscriptions, // если нужно отдавать подписки
+        settings: user.settings, // если нужно отдавать настройки
       },
     });
   } catch (err) {
-    json(res, 401, { error: "Ошибка токена" });
+    console.error("❌ Ошибка подключения к MongoDB:", err);
+    return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
   }
 };

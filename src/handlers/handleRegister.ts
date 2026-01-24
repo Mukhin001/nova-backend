@@ -95,6 +95,16 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
         email,
         passwordHash,
         createdAt: new Date(),
+        subscriptions: {
+          cities: [],
+          newsCategories: [],
+        },
+
+        settings: {
+          defaultCity: null,
+          units: "metric",
+          language: "ru",
+        },
       };
 
       const result = await users.insertOne(newUser);
@@ -119,7 +129,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
         • быстрый вход  
         Если вы не регистрировались — просто игнорируйте это письмо.
         С уважением,  
-        Команда Nova App.`
+        Команда Nova App.`,
       ).catch(console.error); // не ломаем регистрацию, если письмо не ушло
 
       res.setHeader("Set-Cookie", [

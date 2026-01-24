@@ -18,7 +18,7 @@ interface DecodedUser {
 
 export const handleUpdateProfile = (
   req: IncomingMessage & { user?: DecodedUser },
-  res: ServerResponse
+  res: ServerResponse,
 ) => {
   try {
     if (!req.user) {
@@ -58,7 +58,7 @@ export const handleUpdateProfile = (
 
       const isPasswordCorrect = await bcrypt.compare(
         password,
-        user.passwordHash
+        user.passwordHash,
       );
       if (!isPasswordCorrect) {
         return json(res, 401, { error: "Неверный текущий пароль" });
@@ -66,7 +66,7 @@ export const handleUpdateProfile = (
 
       const updatedFields: Partial<User> = { name, email };
 
-      if (password_new && password_new.length >= 6) {
+      if (password_new && password_new.length >= 8) {
         updatedFields.passwordHash = await bcrypt.hash(password_new, 10);
       }
 
@@ -77,8 +77,8 @@ export const handleUpdateProfile = (
         message: "Данные обновлены ✅",
         user: {
           id: user._id.toString(),
-          name: user.name,
-          email: user.email,
+          name,
+          email,
           createdAt: user.createdAt,
         },
       });

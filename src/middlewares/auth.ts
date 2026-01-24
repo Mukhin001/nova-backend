@@ -3,7 +3,7 @@ import { json } from "../utils/response.js";
 import type { IncomingMessage, ServerResponse } from "http";
 import { getAuthToken } from "../utils/getAuthToken.js";
 
-interface DecodedToken {
+export interface DecodedToken {
   id: string;
   email: string;
 }

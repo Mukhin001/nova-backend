@@ -45,8 +45,8 @@ const server = http.createServer(
     if (req.url === "/location" && req.method === "GET") {
       return handleLocation(req, res);
     }
-    if (req.url === "/me" && req.method === "GET") {
-      return handleMe(req, res);
+    if (req.url === "/user/me" && req.method === "GET") {
+      return authMiddleware(req, res, () => handleMe(req, res));
     }
     if (req.url?.startsWith("/weather") && req.method === "GET") {
       return handleWeather(req, res);
@@ -60,7 +60,7 @@ const server = http.createServer(
     if (req.url === "/login" && req.method === "POST") {
       return handleLogin(req, res);
     }
-    if (req.url === "/update-profile" && req.method === "PUT") {
+    if (req.url === "/user/update-profile" && req.method === "PUT") {
       return authMiddleware(req, res, () => handleUpdateProfile(req, res));
     }
     if (req.url === "/logout" && req.method === "POST") {
@@ -69,7 +69,17 @@ const server = http.createServer(
     if (req.url === "/delete-user" && req.method === "POST") {
       return handleDelete(req, res);
     }
-  }
+    if (req.url === "/user/subscriptions" && req.method === "PUT") {
+      // return authMiddleware(req, res, () =>
+      //   handleUpdateSubscriptions(req, res),
+      // );
+    }
+    if (req.url === "/user/feed" && req.method === "GET") {
+      // return authMiddleware(req, res, () =>
+      //   handleFeed(req, res),
+      // );
+    }
+  },
 );
 
 // --- ОБРАБОТКА ЗАКРЫТИЯ СЕРВЕРА ---
