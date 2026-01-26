@@ -1,8 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { json } from "../utils/response.js";
-import { dbConnect } from "../db/mongDbClient.js";
+import { json } from "../../utils/response.js";
+import { dbConnect } from "../../db/mongDbClient.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
-import { sendEmail } from "../utils/sendEmail.js";
+import { sendEmail } from "../../utils/sendEmail.js";
 
 export const handleDelete = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
@@ -59,7 +59,7 @@ export const handleDelete = (req: IncomingMessage, res: ServerResponse) => {
         Если вы не запрашивали удаление — незамедлительно свяжитесь с поддержкой.
 
         С уважением,
-        Команда Nova App`
+        Команда Nova App`,
       ).catch(console.error); // не ломаем регистрацию, если письмо не ушло
 
       // 6. ответ

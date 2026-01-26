@@ -1,11 +1,11 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { dbConnect } from "../db/mongDbClient.js";
-import { json } from "../utils/response.js";
+import { dbConnect } from "@/db/mongDbClient.js";
+import { json } from "@/utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
 import jwt from "jsonwebtoken";
-import { sendEmail } from "../utils/sendEmail.js";
-import { LIMITS } from "../constants/validation.js";
-import { validateEmail } from "../utils/validateEmail.js";
+import { sendEmail } from "@/utils/sendEmail.js";
+import { LIMITS } from "@/constants/validation.js";
+import { validateEmail } from "@/utils/validateEmail.js";
 
 export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
@@ -95,10 +95,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
         email,
         passwordHash,
         createdAt: new Date(),
-        subscriptions: {
-          cities: [],
-          newsCategories: [],
-        },
+        subscriptions: [],
 
         settings: {
           defaultCity: null,
@@ -139,12 +136,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
       // 8. Отправляем успешный ответ
       json(res, 201, {
         message: "Пользователь создан ✅",
-        user: {
-          id: userId,
-          name: newUser.name,
-          email: newUser.email,
-          createdAt: newUser.createdAt,
-        },
+        newUser,
       });
     } catch (error) {
       console.error("❌ Ошибка регистрации:", error);

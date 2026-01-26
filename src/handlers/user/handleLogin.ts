@@ -1,10 +1,10 @@
 import { IncomingMessage, ServerResponse } from "http";
-import { dbConnect } from "../db/mongDbClient.js";
-import { json } from "../utils/response.js";
+import { dbConnect } from "@/db/mongDbClient.js";
+import { json } from "@/utils/response.js";
 import bcrypt from "bcrypt"; // для хэширования пароля
 import jwt from "jsonwebtoken";
-import { LIMITS } from "../constants/validation.js";
-import { validateEmail } from "../utils/validateEmail.js";
+import { LIMITS } from "@/constants/validation.js";
+import { validateEmail } from "@/utils/validateEmail.js";
 
 export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
@@ -81,7 +81,7 @@ export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
         process.env.JWT_SECRET!,
         {
           expiresIn: "1h",
-        }
+        },
       );
 
       res.setHeader("Set-Cookie", [

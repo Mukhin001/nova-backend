@@ -1,6 +1,6 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { json } from "../utils/response.js";
-import { dbConnect } from "../db/mongDbClient.js";
+import { json } from "../../utils/response.js";
+import { dbConnect } from "../../db/mongDbClient.js";
 import { ObjectId } from "mongodb";
 import bcrypt from "bcrypt";
 
@@ -22,7 +22,6 @@ export const handleUpdateProfile = (
 ) => {
   try {
     if (!req.user) {
-      //console.log(req.user);
       return json(res, 401, { error: "Нет токена" });
     }
 
@@ -43,10 +42,9 @@ export const handleUpdateProfile = (
         console.error("❌ Ошибка подключения к MongoDB:", err);
         return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
       }
-      //const db = await dbConnect();
+
       const users = db.collection("users");
       if (!req.user) {
-        //console.log(req.user);
         return json(res, 401, { error: "Нет токена" });
       }
       const userId: string = req.user.id;

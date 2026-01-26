@@ -1,17 +1,19 @@
 import "dotenv/config"; // автоматически загружает глобально .env
 import http, { IncomingMessage, ServerResponse } from "http";
 import { handleGreet } from "./handlers/greet.js";
-import { handleLogin } from "./handlers/handleLogin.js";
-import { handleRegister } from "./handlers/handleRegister.js";
-import { handleUpdateProfile } from "./handlers/handleUpdateProfile.js";
+import { handleLogin } from "./handlers/user/handleLogin.js";
+import { handleRegister } from "./handlers/user/handleRegister.js";
+import { handleUpdateProfile } from "./handlers/user/handleUpdateProfile.js";
 import { authMiddleware } from "./middlewares/auth.js";
-import { handleMe } from "./handlers/handleMe.js";
-import { handleLogout } from "./handlers/handleLogout.js";
-import { handleDelete } from "./handlers/handleDelete.js";
+import { handleMe } from "./handlers/user/handleMe.js";
+import { handleLogout } from "./handlers/user/handleLogout.js";
+import { handleDelete } from "./handlers/user/handleDelete.js";
 import { handleWeather } from "./handlers/handleWeather.js";
 import { handleNews } from "./handlers/handleNews.js";
 import { handleLocation } from "./handlers/handleLocation.js";
 import { handleDevice } from "./handlers/handleDevice.js";
+import { handleUpdateSubscriptions } from "./handlers/user/handleUpdateSubscriptions.js";
+import { handleFeed } from "./handlers/user/handleFeed.js";
 
 const PORT = Number(process.env.PORT) || 3000;
 
@@ -69,15 +71,13 @@ const server = http.createServer(
     if (req.url === "/delete-user" && req.method === "POST") {
       return handleDelete(req, res);
     }
-    if (req.url === "/user/subscriptions" && req.method === "PUT") {
-      // return authMiddleware(req, res, () =>
-      //   handleUpdateSubscriptions(req, res),
-      // );
+    if (req.url === "/user/subscription-settings" && req.method === "PUT") {
+      return authMiddleware(req, res, () =>
+        handleUpdateSubscriptions(req, res),
+      );
     }
     if (req.url === "/user/feed" && req.method === "GET") {
-      // return authMiddleware(req, res, () =>
-      //   handleFeed(req, res),
-      // );
+      return authMiddleware(req, res, () => handleFeed(req, res));
     }
   },
 );
