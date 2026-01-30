@@ -91,12 +91,7 @@ export const handleLogin = (req: IncomingMessage, res: ServerResponse) => {
       // 6. Если всё верно
       json(res, 200, {
         message: "Успешный вход ✅",
-        user: {
-          id: user._id.toString(),
-          name: user.name,
-          email: user.email,
-          createdAt: user.createdAt,
-        },
+        user: user,
       });
     } catch (error) {
       console.error("❌ Ошибка логина:", error);
