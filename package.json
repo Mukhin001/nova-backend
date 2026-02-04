@@ -8,6 +8,9 @@
     "build": "tsc",
     "start": "node dist/app.js"
   },
+  "engines": {
+    "node": ">=18"
+  },
   "type": "module",
   "keywords": [],
   "author": "",

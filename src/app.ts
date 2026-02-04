@@ -14,14 +14,15 @@ import { handleLocation } from "./handlers/handleLocation.js";
 import { handleDevice } from "./handlers/handleDevice.js";
 import { handleUpdateSubscriptions } from "./handlers/user/handleUpdateSubscriptions.js";
 import { handleFeed } from "./handlers/user/handleFeed.js";
-
+// FRONTEND_URL = https://your-project.vercel.app
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 const PORT = Number(process.env.PORT) || 3000;
 
 const setCors = (res: ServerResponse) => {
   // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)
   // потом это все нужно будет поменять код ниже так как это не безопасно для продакшина
   // Для разработки — localhost. В продакшне заменим на конкретный домен.
-  res.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+  res.setHeader("Access-Control-Allow-Origin", FRONTEND_URL);
   res.setHeader("Access-Control-Allow-Credentials", "true");
   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
@@ -96,5 +97,5 @@ process.on("SIGINT", shutdown); // Ctrl+C
 process.on("SIGTERM", shutdown); // системное завершение
 
 server.listen(PORT, () => {
-  console.log(`🚀 Сервер запущен в файле app на http://localhost:${PORT}`);
+  console.log(`🚀 Сервер запущен в файле app на port ${PORT}`);
 });
