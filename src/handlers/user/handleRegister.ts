@@ -19,7 +19,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
     try {
       // 2. Парсим JSON из тела запроса
       const { name, email, password } = JSON.parse(body);
-      //console.log("📥 Получены данные с фронта:");
+      console.log("📥 Получены данные с фронта:", name, email, password);
 
       if (
         typeof name !== "string" ||
@@ -68,11 +68,13 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
             "Пароль должен содержать одну заглавную букву, одну строчную, одну цифру и один спецсимвол.",
         });
       }
+      console.log("данные прошли проверку");
 
       // 4. Получаем доступ к базе
       let db;
       try {
         db = await dbConnect();
+        console.log("mongoDb подключенна");
       } catch (err) {
         console.error("❌ Ошибка подключения к MongoDB:", err);
         return json(res, 500, { error: "Сервер MongoDB временно недоступен" });
@@ -136,7 +138,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
       // 8. Отправляем успешный ответ
       json(res, 201, {
         message: "Пользователь создан ✅",
-        newUser,
+        user: newUser,
       });
     } catch (error) {
       console.error("❌ Ошибка регистрации:", error);
