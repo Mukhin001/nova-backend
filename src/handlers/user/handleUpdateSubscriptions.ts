@@ -1,6 +1,6 @@
-import { dbConnect } from "@/db/mongDbClient.js";
-import type { DecodedToken } from "@/middlewares/auth.js";
-import { json } from "@/utils/response.js";
+import { dbConnect } from "../../db/mongDbClient.js";
+import type { DecodedToken } from "../../middlewares/auth.js";
+import { json } from "../../utils/response.js";
 import type { IncomingMessage, ServerResponse } from "http";
 import { ObjectId } from "mongodb";
 
