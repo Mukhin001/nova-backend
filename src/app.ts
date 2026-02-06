@@ -15,7 +15,7 @@ import { handleDevice } from "./handlers/handleDevice.js";
 import { handleUpdateSubscriptions } from "./handlers/user/handleUpdateSubscriptions.js";
 import { handleFeed } from "./handlers/user/handleFeed.js";
 // FRONTEND_URL = https://your-project.vercel.app
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
+const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3001";
 const PORT = Number(process.env.PORT) || 3000;
 console.log(process.env.FRONTEND_URL);
 
@@ -58,19 +58,19 @@ const server = http.createServer(
     if (req.url?.startsWith("/news") && req.method === "GET") {
       return handleNews(req, res);
     }
-    if (req.url === "/register" && req.method === "POST") {
+    if (req.url === "/user/register" && req.method === "POST") {
       return handleRegister(req, res);
     }
-    if (req.url === "/login" && req.method === "POST") {
+    if (req.url === "/user/login" && req.method === "POST") {
       return handleLogin(req, res);
     }
     if (req.url === "/user/update-profile" && req.method === "PUT") {
       return authMiddleware(req, res, () => handleUpdateProfile(req, res));
     }
-    if (req.url === "/logout" && req.method === "POST") {
+    if (req.url === "/user/logout" && req.method === "POST") {
       return handleLogout(req, res);
     }
-    if (req.url === "/delete-user" && req.method === "POST") {
+    if (req.url === "/user/delete-user" && req.method === "POST") {
       return handleDelete(req, res);
     }
     if (req.url === "/user/subscription-settings" && req.method === "PUT") {
