@@ -1,8 +1,8 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { json } from "@/utils/response.js";
-import { dbConnect } from "@/db/mongDbClient.js";
+import { json } from "../../utils/response.js";
+import { dbConnect } from "../../db/mongDbClient.js";
 import { ObjectId } from "mongodb";
-import type { DecodedToken } from "@/middlewares/auth.js";
+import type { DecodedToken } from "../../middlewares/auth.js";
 
 export const handleMe = async (
   req: IncomingMessage & { user?: DecodedToken },

@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from "http";
-import { json } from "@/utils/response.js";
+import { json } from "../../utils/response.js";
 
 export const handleLogout = (req: IncomingMessage, res: ServerResponse) => {
   res.setHeader("Set-Cookie", [
