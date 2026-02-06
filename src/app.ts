@@ -20,7 +20,7 @@ const FRONTEND_URL = (
 ).replace(/\/$/, "");
 const PORT = Number(process.env.PORT) || 3000;
 //console.log(process.env.FRONTEND_URL);
-
+///
 const setCors = (res: ServerResponse) => {
   // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)
   // потом это все нужно будет поменять код ниже так как это не безопасно для продакшина
