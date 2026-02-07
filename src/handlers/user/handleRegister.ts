@@ -132,8 +132,11 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
       ).catch(console.error); // не ломаем регистрацию, если письмо не ушло
 
       res.setHeader("Set-Cookie", [
-        `auth_token=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=None; Secure`,
+        `auth_token=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=Lax; Secure`,
       ]);
+      // res.setHeader("Set-Cookie", [
+      //   `auth_token=${token}; HttpOnly; Path=/; Max-Age=3600; SameSite=None; Secure`,
+      // ]);
 
       // 8. Отправляем успешный ответ
       json(res, 201, {
