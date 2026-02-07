@@ -14,7 +14,8 @@ import { handleLocation } from "./handlers/handleLocation.js";
 import { handleDevice } from "./handlers/handleDevice.js";
 import { handleUpdateSubscriptions } from "./handlers/user/handleUpdateSubscriptions.js";
 import { handleFeed } from "./handlers/user/handleFeed.js";
-// FRONTEND_URL = https://your-project.vercel.app
+import { json } from "./utils/response.js";
+
 const FRONTEND_URL = (
   process.env.FRONTEND_URL || "http://localhost:3000"
 ).replace(/\/$/, "");
@@ -41,7 +42,7 @@ const server = http.createServer(
       return;
     }
 
-    if (req.url === "/" && req.method === "GET") {
+    if (req.url === "/greet" && req.method === "GET") {
       handleGreet(req, res);
       return;
     }
@@ -83,6 +84,8 @@ const server = http.createServer(
     if (req.url === "/user/feed" && req.method === "GET") {
       return authMiddleware(req, res, () => handleFeed(req, res));
     }
+
+    return json(res, 404, { error: "Route не найден" });
   },
 );
 
