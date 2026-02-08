@@ -14,13 +14,12 @@ import { handleLocation } from "./handlers/handleLocation.js";
 import { handleDevice } from "./handlers/handleDevice.js";
 import { handleUpdateSubscriptions } from "./handlers/user/handleUpdateSubscriptions.js";
 import { handleFeed } from "./handlers/user/handleFeed.js";
-// FRONTEND_URL = https://your-project.vercel.app
+
 const FRONTEND_URL = (
-  process.env.FRONTEND_URL || "http://localhost:3000"
+  process.env.FRONTEND_URL || "http://localhost:3001"
 ).replace(/\/$/, "");
 const PORT = Number(process.env.PORT) || 3000;
-//console.log(process.env.FRONTEND_URL);
-///
+
 const setCors = (res: ServerResponse) => {
   // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)
   // потом это все нужно будет поменять код ниже так как это не безопасно для продакшина
@@ -41,7 +40,7 @@ const server = http.createServer(
       return;
     }
 
-    if (req.url === "/" && req.method === "GET") {
+    if (req.url === "/greet" && req.method === "GET") {
       handleGreet(req, res);
       return;
     }
