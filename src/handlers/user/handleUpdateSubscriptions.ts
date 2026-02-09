@@ -28,6 +28,10 @@ export const handleUpdateSubscriptions = (
     try {
       const parsed: UpdateSubscriptionsBody = JSON.parse(body);
 
+      if (!parsed.subscriptions) {
+        return json(res, 400, { error: "Нет массива выбранных городов" });
+      }
+
       if (!parsed.subscriptions || parsed.subscriptions.length === 0) {
         return json(res, 400, { error: "Не выбрали ни одного города" });
       }
