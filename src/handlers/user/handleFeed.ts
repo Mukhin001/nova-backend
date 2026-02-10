@@ -65,6 +65,7 @@ export const handleFeed = async (
               temp: weatherJson.main.temp,
               feelsLike: weatherJson.main.feels_like,
               humidity: weatherJson.main.humidity,
+              condition: weatherJson.weather[0].main,
               description: weatherJson.weather[0]?.description,
               icon: weatherJson.weather[0]?.icon,
             }
