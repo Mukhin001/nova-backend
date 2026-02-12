@@ -14,7 +14,7 @@ import { handleLocation } from "./handlers/handleLocation.js";
 import { handleDevice } from "./handlers/handleDevice.js";
 import { handleUpdateSubscriptions } from "./handlers/user/handleUpdateSubscriptions.js";
 import { handleFeed } from "./handlers/user/handleFeed.js";
-import { handleAnalytics } from "handlers/handleAnalytics.js";
+import { handleAnalytics } from "./handlers/handleAnalytics.js";
 
 const FRONTEND_URL = (
   process.env.FRONTEND_URL || "http://localhost:3001"
