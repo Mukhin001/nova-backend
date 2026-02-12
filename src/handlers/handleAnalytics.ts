@@ -1,6 +1,6 @@
-import { dbConnect } from "db/mongDbClient.js";
+import { dbConnect } from "../db/mongDbClient.js";
 import type { IncomingMessage, ServerResponse } from "http";
-import { json } from "utils/response.js";
+import { json } from "../utils/response.js";
 
 export const handleAnalytics = async (
   req: IncomingMessage,
