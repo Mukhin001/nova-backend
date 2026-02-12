@@ -14,6 +14,7 @@ import { handleLocation } from "./handlers/handleLocation.js";
 import { handleDevice } from "./handlers/handleDevice.js";
 import { handleUpdateSubscriptions } from "./handlers/user/handleUpdateSubscriptions.js";
 import { handleFeed } from "./handlers/user/handleFeed.js";
+import { handleAnalytics } from "handlers/handleAnalytics.js";
 
 const FRONTEND_URL = (
   process.env.FRONTEND_URL || "http://localhost:3001"
@@ -52,6 +53,9 @@ const server = http.createServer(
     }
     if (req.url === "/user/me" && req.method === "GET") {
       return authMiddleware(req, res, () => handleMe(req, res));
+    }
+    if (req.url === "/analytics" && req.method === "GET") {
+      return handleAnalytics(req, res);
     }
     if (req.url?.startsWith("/weather") && req.method === "GET") {
       return handleWeather(req, res);

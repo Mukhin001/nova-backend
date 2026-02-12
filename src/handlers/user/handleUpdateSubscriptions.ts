@@ -60,11 +60,11 @@ export const handleUpdateSubscriptions = (
       );
 
       // ✅ Проверка на null, чтобы TS был доволен
-      if (result === null || !result.value) {
-        return json(res, 404, { error: "Пользователь не найден" });
+      if (!result) {
+        return json(res, 404, { error: "Пользователь не найден " });
       }
 
-      const oldSubs = result.value.subscriptions || [];
+      const oldSubs = result.subscriptions || [];
       const newSubs = parsed.subscriptions;
 
       const added = newSubs.filter(
