@@ -1,3 +1,4 @@
+import { trackEvent } from "../../analytics/trackEvent.js";
 import { dbConnect } from "../../db/mongDbClient.js";
 import type { DecodedToken } from "../../middlewares/auth.js";
 import { json } from "../../utils/response.js";
@@ -18,7 +19,8 @@ export const handleUpdateSubscriptions = (
   res: ServerResponse,
 ) => {
   // ✅ Проверка на наличие токена сразу
-  if (!req.user) {
+  const authUser = req.user;
+  if (!authUser) {
     return json(res, 401, { error: "Нет токена" });
   }
 
@@ -32,7 +34,7 @@ export const handleUpdateSubscriptions = (
         return json(res, 400, { error: "Нет массива выбранных городов" });
       }
 
-      if (!parsed.subscriptions || parsed.subscriptions.length === 0) {
+      if (parsed.subscriptions?.length === 0) {
         return json(res, 400, { error: "Не выбрали ни одного города" });
       }
 
@@ -45,8 +47,7 @@ export const handleUpdateSubscriptions = (
       }
 
       const users = db.collection("users");
-      const userId = req.user?.id;
-
+      const userId = authUser.id;
       // Обновляем подписки и получаем результат
       const result = await users.findOneAndUpdate(
         { _id: new ObjectId(userId) },
@@ -55,21 +56,41 @@ export const handleUpdateSubscriptions = (
             subscriptions: parsed.subscriptions,
           },
         },
-        { returnDocument: "after" }, // вернёт обновлённый документ
+        { returnDocument: "before" }, // вернёт старый документ
       );
 
       // ✅ Проверка на null, чтобы TS был доволен
-      if (!result) {
+      if (result === null || !result.value) {
         return json(res, 404, { error: "Пользователь не найден" });
       }
 
-      const updatedUser = result.value || result;
+      const oldSubs = result.value.subscriptions || [];
+      const newSubs = parsed.subscriptions;
 
+      const added = newSubs.filter(
+        (n) => !oldSubs.some((o: Subscription) => o.city === n.city),
+      );
+      const removed = oldSubs.filter(
+        (o: Subscription) => !newSubs.some((n) => n.city === o.city),
+      );
+
+      await trackEvent({
+        db,
+        req,
+        event: "subscription_updated",
+        userId: userId ?? null,
+        data: {
+          oldCount: oldSubs.length,
+          newCount: newSubs.length,
+          added,
+          removed,
+        },
+      });
       //console.log(updatedUser.subscriptions);
       // Отправляем обновлённые подписки
       return json(res, 200, {
         message: "Подписки обновлены ✅",
-        subscriptions: updatedUser.subscriptions,
+        subscriptions: newSubs,
       });
     } catch (err) {
       console.error("❌ Ошибка обработки запроса:", err);

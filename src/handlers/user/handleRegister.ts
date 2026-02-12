@@ -6,6 +6,7 @@ import jwt from "jsonwebtoken";
 import { sendEmail } from "../../utils/sendEmail.js";
 import { LIMITS } from "../../constants/validation.js";
 import { validateEmail } from "../../utils/validateEmail.js";
+import { trackEvent } from "../../analytics/trackEvent.js";
 
 export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
   let body = "";
@@ -68,7 +69,7 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
             "Пароль должен содержать одну заглавную букву, одну строчную, одну цифру и один спецсимвол.",
         });
       }
-      console.log("данные прошли проверку");
+      //console.log("данные прошли проверку");
 
       // 4. Получаем доступ к базе
       let db;
@@ -107,9 +108,18 @@ export const handleRegister = (req: IncomingMessage, res: ServerResponse) => {
       };
 
       const result = await users.insertOne(newUser);
-
       // ✅ получаем id из результата вставки
       const userId = result.insertedId.toString();
+
+      await trackEvent({
+        db,
+        req,
+        event: "user_registered",
+        userId,
+        data: {
+          method: "email",
+        },
+      });
 
       // ✅ генерируем токен
       const token = jwt.sign({ id: userId }, process.env.JWT_SECRET!, {
