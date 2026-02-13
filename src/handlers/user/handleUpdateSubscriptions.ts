@@ -1,9 +1,9 @@
-import { trackEvent } from "../../analytics/trackEvent.js";
 import { dbConnect } from "../../db/mongDbClient.js";
 import type { DecodedToken } from "../../middlewares/auth.js";
 import { json } from "../../utils/response.js";
 import type { IncomingMessage, ServerResponse } from "http";
 import { ObjectId } from "mongodb";
+import { updateCityStats } from "../../analytics/updateCityStats.js";
 
 type Subscription = {
   city: string;
@@ -59,34 +59,23 @@ export const handleUpdateSubscriptions = (
         { returnDocument: "before" }, // вернёт старый документ
       );
 
-      // ✅ Проверка на null, чтобы TS был доволен
-      if (!result) {
-        return json(res, 404, { error: "Пользователь не найден " });
+      // ✅ Проверка на null, чтобы TS был доволенif (!result.value)
+      if (!result || result === null) {
+        return json(res, 404, { error: "Пользователь не найден" });
       }
 
       const oldSubs = result.subscriptions || [];
-      const newSubs = parsed.subscriptions;
+      const newSubs = parsed.subscriptions || [];
 
+      // Отфильтровываем реально новые подписки
       const added = newSubs.filter(
-        (n) => !oldSubs.some((o: Subscription) => o.city === n.city),
-      );
-      const removed = oldSubs.filter(
-        (o: Subscription) => !newSubs.some((n) => n.city === o.city),
+        (n) =>
+          !oldSubs.some(
+            (o: Subscription) => o.city === n.city && o.category === n.category,
+          ),
       );
 
-      await trackEvent({
-        db,
-        req,
-        event: "subscription_updated",
-        userId: userId ?? null,
-        data: {
-          oldCount: oldSubs.length,
-          newCount: newSubs.length,
-          added,
-          removed,
-        },
-      });
-      //console.log(updatedUser.subscriptions);
+      await updateCityStats({ db, added });
       // Отправляем обновлённые подписки
       return json(res, 200, {
         message: "Подписки обновлены ✅",
