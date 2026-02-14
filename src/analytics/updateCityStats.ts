@@ -21,19 +21,17 @@ export const updateCityStats = async ({ db, added }: Params) => {
 
   const ops = added.map((sub) =>
     collection.updateOne(
-      { _id: sub.city }, // ищем по названию города
+      { _id: sub.city },
       {
         $inc: {
           total: 1,
           [`categories.${sub.category}`]: 1,
         },
-        $setOnInsert: {
-          categories: { [sub.category]: 1 }, // создаём categories если нет
-        },
       },
       { upsert: true },
     ),
   );
+  console.log("new city ops:", ops);
 
   await Promise.all(ops);
 };

@@ -64,18 +64,14 @@ export const handleUpdateSubscriptions = (
         return json(res, 404, { error: "Пользователь не найден" });
       }
 
-      const oldSubs = result.subscriptions || [];
       const newSubs = parsed.subscriptions || [];
 
-      // Отфильтровываем реально новые подписки
-      const added = newSubs.filter(
-        (n) =>
-          !oldSubs.some(
-            (o: Subscription) => o.city === n.city && o.category === n.category,
-          ),
-      );
+      try {
+        await updateCityStats({ db, added: newSubs });
+      } catch (err) {
+        console.error("Analytics error:", err);
+      }
 
-      await updateCityStats({ db, added });
       // Отправляем обновлённые подписки
       return json(res, 200, {
         message: "Подписки обновлены ✅",
