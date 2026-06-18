@@ -17,9 +17,9 @@ import { handleFeed } from "./handlers/user/handleFeed.js";
 import { handleGetCityStats } from "./handlers/handleGetCityStats.js";
 
 const FRONTEND_URL = (
-  process.env.FRONTEND_URL || "http://localhost:3001"
+  process.env.FRONTEND_URL || "http://localhost:5000"
 ).replace(/\/$/, "");
-const PORT = Number(process.env.PORT) || 3000;
+const PORT = Number(process.env.PORT) || 5000;
 
 const setCors = (res: ServerResponse) => {
   // ✅ Разрешаем запросы с других источников (например, фронтенда на 3000)

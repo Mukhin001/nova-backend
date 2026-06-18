@@ -1,3 +1,4 @@
+import { error } from "console";
 import { dbConnect } from "../../db/mongDbClient.js";
 import type { DecodedToken } from "../../middlewares/auth.js";
 import { json } from "../../utils/response.js";
@@ -56,35 +57,46 @@ export const handleFeed = async (
         const { city, category } = sub;
 
         // 1️⃣ погода
-        const weatherRes = await fetch(
-          `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=ru&appid=${process.env.WEATHER_API_KEY}`,
-        );
-        const weatherJson = await weatherRes.json();
-        const weather = weatherJson.main
-          ? {
-              temp: weatherJson.main.temp,
-              feelsLike: weatherJson.main.feels_like,
-              humidity: weatherJson.main.humidity,
-              condition: weatherJson.weather[0].main,
-              description: weatherJson.weather[0]?.description,
-              icon: weatherJson.weather[0]?.icon,
-            }
-          : null;
+        let weather = null;
+        try {
+          const weatherRes = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&lang=ru&appid=${process.env.WEATHER_API_KEY}`,
+          );
 
-        // 2️⃣ новости
-        const newsRes = await fetch(
-          `https://newsdata.io/api/1/latest?apikey=${process.env.NEWS_API_KEY}&category=${category}&q=${city}`,
-        );
-        const newsJson = (await newsRes.json()) as Partial<NewsApiResponse>;
+          if (!weatherRes.ok) {
+            throw new Error("Weather API error");
+          }
 
-        const news = Array.isArray(newsJson.results)
-          ? newsJson.results.map((item) => ({
-              title: item.title,
-              description: item.description,
-              link: item.link,
-              pubDate: item.pubDate,
-            }))
-          : [];
+          const weatherJson = await weatherRes.json();
+          weather = {
+            temp: weatherJson.main?.temp,
+            feelsLike: weatherJson.main?.feels_like,
+            humidity: weatherJson.main?.humidity,
+            condition: weatherJson.weather?.[0]?.main,
+            description: weatherJson.weather?.[0]?.description,
+            icon: weatherJson.weather?.[0]?.icon,
+          };
+        } catch (err) {
+          console.error("Weather failed:", city, err);
+          weather = null;
+        }
+
+        let news = [];
+        try {
+          const newsRes = await fetch(
+            `https://newsdata.io/api/1/latest?apikey=${process.env.NEWS_API_KEY}&category=${category}&q=${city}`,
+          );
+          console.log("News status:", newsRes.status);
+          console.log("News url:", newsRes.url);
+          if (!newsRes.ok) {
+            throw new Error("News API error");
+          }
+          const newsJson = await newsRes.json();
+          news = newsJson.results ?? [];
+        } catch (err) {
+          console.error("News failed:", city, err);
+          news = [];
+        }
 
         return {
           city,

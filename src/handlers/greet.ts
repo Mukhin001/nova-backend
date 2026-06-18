@@ -7,5 +7,5 @@ import { json } from "../utils/response.js";
  */
 export const handleGreet = (req: IncomingMessage, res: ServerResponse) => {
   // Если нужно — можно различать GET/POST и т.д.
-  json(res, 200, { message: "Greetings from the server, Nova App!" });
+  json(res, 200, { message: "Привет! Сервер Nova App активен 🚀" });
 };
